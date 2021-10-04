@@ -1,5 +1,8 @@
+const urlParams = new URLSearchParams(window.location.search);
+const zip = urlParams.get('zip');
+
 window.CONFIG = {
-  crawl: `Due to the discontinuation of Weather Underground's API, severe weather alerts`,
+  crawl: `Image data from NOAA/NESDIS/STAR GOES-East; Upcoming: severe alert data from weather.gov; see github.com/jpda/intellistar-emulator`,
   greeting: 'This is your weather',
   language: 'en-US', // Supported in TWC API
   countryCode: 'US', // Supported in TWC API (for postal key)
@@ -28,7 +31,7 @@ window.CONFIG = {
     if (args.crawlText !== '') CONFIG.crawl = args.crawlText
     if (args.greetingText !== '') CONFIG.greeting = args.greetingText
     if (args.loop === 'y') CONFIG.loop = true
-    if(/(^\d{5}$)|(^\d{5}-\d{4}$)/.test(args['zip-code'])){
+    if (/(^\d{5}$)|(^\d{5}-\d{4}$)/.test(args['zip-code'])) {
       zipCode = args['zip-code'];
     } else {
       alert("Enter valid ZIP code");
@@ -38,6 +41,11 @@ window.CONFIG = {
     fetchCurrentWeather();
   },
   load: () => {
+    if (zip !== null) {
+      localStorage.setItem("zip-code", zip);
+      localStorage.setItem("loop", true);
+      CONFIG.loop = true;
+    }
     let settingsPrompt = getElement('settings-prompt')
     let zipContainer = getElement('zip-container')
     let advancedSettingsOptions = getElement('advanced-settings-options')
@@ -56,7 +64,7 @@ window.CONFIG = {
       textbox.id = `${option.id}-text`
       if (localStorage.getItem(option.id)) textbox.value = localStorage.getItem(option.id)
       let br = document.createElement('br')
-      if(textbox.id == "zip-code-text"){
+      if (textbox.id == "zip-code-text") {
         textbox.setAttribute('maxlength', '5')
         textbox.style.fontSize = '35px'
         label.style.width = "auto"
@@ -64,7 +72,7 @@ window.CONFIG = {
         zipContainer.appendChild(textbox)
         zipContainer.appendChild(br)
       }
-      else{
+      else {
         advancedSettingsOptions.appendChild(label)
         advancedSettingsOptions.appendChild(textbox)
         advancedSettingsOptions.appendChild(br)
